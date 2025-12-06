@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ===== Event create / edit form ===== */
 .event-form {
   background: white;
@@ -137,3 +138,142 @@
     grid-template-columns: 1fr;
   }
 }
+=======
+/* ===== Event create / edit form ===== */
+.event-form {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+  width: 95%;
+}
+
+.event-form .form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.event-form label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.event-form input,
+.event-form textarea {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #f9fafb;
+  transition: 0.2s;
+}
+
+.event-form input:focus,
+.event-form textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: white;
+}
+
+.form-row.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border: none;
+  padding: 11px 20px;
+  color: white;
+  border-radius: 999px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 10px 24px rgba(37,99,235,0.5);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.1s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(37,99,235,0.7);
+  filter: brightness(1.04);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(37,99,235,0.45);
+}
+
+/* ===== Event list table ===== */
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.events-table th,
+.events-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.events-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+.events-table tr:hover {
+  background: #f9fafb;
+}
+
+/* ===== Event details page ===== */
+.event-details-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.event-details-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+  gap: 18px;
+}
+
+.join-card {
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px dashed rgba(148,163,184,0.8);
+}
+
+.join-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.join-card p {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+/* Responsive for event details layout */
+@media (max-width: 960px) {
+  .event-details-layout {
+    grid-template-columns: 1fr;
+  }
+}
+>>>>>>> 47c52acb341e02dac2adcee5692bda62f4bb8533

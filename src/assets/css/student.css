@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ===== STUDENT DASHBOARD – MATCH ADMIN THEME ===== */
 
 /* Page background */
@@ -162,3 +163,169 @@ body {
     grid-template-columns: 1fr;
   }
 }
+=======
+/* ===== STUDENT DASHBOARD – MATCH ADMIN THEME ===== */
+
+/* Page background */
+body {
+  background: #f4f5fb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Main container */
+.student-container {
+  max-width: 1180px;
+  margin: 24px auto;
+  padding: 0 20px 40px;
+}
+
+/* ===== Top bar (Dashboard title + search) ===== */
+.student-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.student-topbar h1 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.student-search {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  background: #fff;
+  outline: none;
+  min-width: 260px;
+}
+
+/* ===== Stats row (same as admin) ===== */
+.student-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.student-stat-card {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff, #f3f4ff);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 25px rgba(15,23,42,0.08);
+  border: 1px solid rgba(129,140,248,0.35);
+  overflow: hidden;
+  transition: 0.15s ease;
+}
+
+.student-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15,23,42,0.16);
+}
+
+.student-stat-card::after {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: -25px;
+  width: 90px;
+  height: 90px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(129,140,248,0.3), transparent 60%);
+}
+
+.student-stat-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.student-stat-value {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ===== Main grid: Overview + Calendar ===== */
+.student-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+/* Cards */
+.student-card {
+  background: #fff;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(15,23,42,0.08);
+}
+
+/* Chart placeholder (copied from admin) */
+.student-chart {
+  height: 180px;
+  border-radius: 12px;
+  border: 1px dashed #cbd5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ===== Mini calendar (matches admin style) ===== */
+.student-calendar h3,
+.student-timeline h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.student-calendar-box {
+  border: 1px dashed #cbd5f5;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* ===== Notice board / timeline ===== */
+.student-notice-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.student-notice-item:last-child {
+  border-bottom: none;
+}
+
+.student-notice-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-notice-body {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.student-timeline-item {
+  padding: 8px 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+@media (max-width: 960px) {
+  .student-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .student-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+>>>>>>> 47c52acb341e02dac2adcee5692bda62f4bb8533
