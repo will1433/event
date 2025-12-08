@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -134,4 +133,3 @@ if ($conn->query($sql) === TRUE) {
 } else {
     echo "DB ERROR: " . $conn->error;
 }
->>>>>>> 47c52acb341e02dac2adcee5692bda62f4bb8533

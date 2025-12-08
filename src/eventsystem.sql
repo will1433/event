@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 -- ============================================
 -- CREATE / USE DATABASE
 -- ============================================
@@ -218,4 +217,22 @@ CREATE TABLE IF NOT EXISTS students (
   password VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
->>>>>>> 47c52acb341e02dac2adcee5692bda62f4bb8533
+
+-- ============================================
+-- FEEDBACK TABLE (for GP-UC6)
+-- ============================================
+CREATE TABLE event_feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  event_id INT NOT NULL,
+  student_email VARCHAR(150) NOT NULL,
+  rating TINYINT NOT NULL,        -- 1 to 5
+  comments TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_fb_event
+    FOREIGN KEY (event_id) REFERENCES events(id)
+    ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX idx_fb_unique
+  ON event_feedback (event_id, student_email);
+

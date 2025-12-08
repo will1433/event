@@ -1,63 +1,48 @@
-<<<<<<< HEAD
-</div> <!-- end .layout -->
 <script src="https://unpkg.com/feather-icons"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // 1) Render all feather icons on the page
-  if (window.feather) {
-    feather.replace();
-  }
+  document.addEventListener('DOMContentLoaded', function () {
+    // 1) Render all feather icons
+    if (window.feather) {
+      feather.replace();
+    }
 
-  // 2) Dropdown behavior
-  const btn  = document.getElementById('userMenuBtn');
-  const menu = document.getElementById('userMenuDropdown');
+    // --- User dropdown ---
+    const userBtn   = document.getElementById('userMenuBtn');
+    const userMenu  = document.getElementById('userMenuDropdown');
 
-  if (!btn || !menu) return;
+    if (userBtn && userMenu) {
+      userBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        userMenu.classList.toggle('show');
+      });
+    }
 
-  btn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    menu.classList.toggle('show');
+    // --- Notification dropdown ---
+    const notifBtn      = document.getElementById('notifBtn');
+    const notifDropdown = document.getElementById('notifDropdown');
+
+    if (notifBtn && notifDropdown) {
+      notifBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('show');
+      });
+    }
+
+    // --- Close dropdowns when clicking outside ---
+    document.addEventListener('click', function (e) {
+      if (userMenu && userBtn &&
+          !userMenu.contains(e.target) &&
+          e.target !== userBtn &&
+          !userBtn.contains(e.target)) {
+        userMenu.classList.remove('show');
+      }
+
+      if (notifDropdown && notifBtn &&
+          !notifDropdown.contains(e.target) &&
+          e.target !== notifBtn &&
+          !notifBtn.contains(e.target)) {
+        notifDropdown.classList.remove('show');
+      }
+    });
   });
-
-  document.addEventListener('click', function () {
-    menu.classList.remove('show');
-  });
-});
 </script>
-
-
-
-</body>
-</html>
-=======
-</div> <!-- end .layout -->
-<script src="https://unpkg.com/feather-icons"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  // 1) Render all feather icons on the page
-  if (window.feather) {
-    feather.replace();
-  }
-
-  // 2) Dropdown behavior
-  const btn  = document.getElementById('userMenuBtn');
-  const menu = document.getElementById('userMenuDropdown');
-
-  if (!btn || !menu) return;
-
-  btn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    menu.classList.toggle('show');
-  });
-
-  document.addEventListener('click', function () {
-    menu.classList.remove('show');
-  });
-});
-</script>
-
-
-
-</body>
-</html>
->>>>>>> 47c52acb341e02dac2adcee5692bda62f4bb8533
