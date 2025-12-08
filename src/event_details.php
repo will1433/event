@@ -59,6 +59,39 @@ $row  = $res->fetch_assoc();
 $stmt->close();
 $waitCount = (int)$row['c'];
 
+// ---- Feedback list ----
+$feedbackList     = [];
+$feedbackCount    = 0;
+$myFeedback       = null;
+$feedbackEnabled  = false;
+
+// Only attempt feedback queries if table exists
+$fbTableCheck = $conn->query("SHOW TABLES LIKE 'event_feedback'");
+if ($fbTableCheck && $fbTableCheck->num_rows > 0) {
+    $feedbackEnabled = true;
+
+    $fbSql = "
+        SELECT rating, comments, student_email, created_at
+        FROM event_feedback
+        WHERE event_id = ?
+        ORDER BY created_at DESC
+    ";
+    $fbStmt = $conn->prepare($fbSql);
+    if ($fbStmt) {
+        $fbStmt->bind_param("i", $eventId);
+        $fbStmt->execute();
+        $fbRes = $fbStmt->get_result();
+        while ($fbRow = $fbRes->fetch_assoc()) {
+            $feedbackList[] = $fbRow;
+            if ($userEmail && strcasecmp($fbRow['student_email'], $userEmail) === 0) {
+                $myFeedback = $fbRow;
+            }
+        }
+        $fbStmt->close();
+    }
+    $feedbackCount = count($feedbackList);
+}
+
 // ---- Student status (joined / waitlisted / none) ----
 $myStatus = 'Not joined';
 if (!$isAdmin && $userEmail) {
@@ -106,6 +139,9 @@ $imagePath = null;
 if (!empty($event['image_path'])) {
     $imagePath = 'uploads/' . $event['image_path'];
 }
+
+$canComment   = (!$isAdmin && $myStatus === 'Joined' && $feedbackEnabled);
+$feedbackFlag = $_GET['feedback'] ?? '';
 ?>
 
 <?php include 'partials/header.php'; ?>
@@ -173,6 +209,88 @@ if (!empty($event['image_path'])) {
                                 </p>
                             </div>
                         </div>
+
+                        <?php if ($feedbackEnabled): ?>
+                        <div class="feedback-section">
+                            <div class="feedback-header">
+                                <div>
+                                    <h3>Feedback &amp; discussion</h3>
+                                    <p class="panel-subtitle">
+                                        <?php echo $feedbackCount; ?> comment<?php echo $feedbackCount === 1 ? '' : 's'; ?> from attendees
+                                    </p>
+                                    <?php if ($feedbackFlag === 'submitted'): ?>
+                                        <div class="alert success">Thanks! Your feedback has been posted.</div>
+                                    <?php elseif ($feedbackFlag === 'updated'): ?>
+                                        <div class="alert success">Your feedback has been updated.</div>
+                                    <?php elseif ($feedbackFlag === 'forbidden'): ?>
+                                        <div class="alert error">Only students who joined this event can leave feedback.</div>
+                                    <?php elseif ($feedbackFlag === 'error'): ?>
+                                        <div class="alert error">Could not save feedback. Please try again.</div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <?php if ($canComment): ?>
+                                <form class="feedback-form" method="post" action="event_feedback_submit.php">
+                                    <input type="hidden" name="event_id" value="<?php echo $eventId; ?>">
+                                    <div class="form-row split">
+                                        <div>
+                                            <label for="rating">Rating</label>
+                                            <select name="rating" id="rating" required>
+                                                <option value="">Select</option>
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                    <option value="<?php echo $i; ?>" <?php echo ($myFeedback && (int)$myFeedback['rating'] === $i) ? 'selected' : ''; ?>>
+                                                        <?php echo $i; ?>
+                                                    </option>
+                                                <?php endfor; ?>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="comments">Comments</label>
+                                            <input type="text" name="comments" id="comments"
+                                                   value="<?php echo htmlspecialchars($myFeedback['comments'] ?? ''); ?>"
+                                                   placeholder="Share what went well or what could improve">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn-primary">
+                                        <?php echo $myFeedback ? 'Update feedback' : 'Post feedback'; ?>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <div class="feedback-locked">
+                                    <p>Join this event to share your feedback.</p>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="feedback-list">
+                                <?php if ($feedbackCount === 0): ?>
+                                    <p class="panel-subtitle">No comments yet. Be the first to share your thoughts.</p>
+                                <?php else: ?>
+                                    <?php foreach ($feedbackList as $fb): ?>
+                                        <div class="feedback-card">
+                                            <div class="feedback-avatar">
+                                                <?php echo strtoupper(substr($fb['student_email'], 0, 1)); ?>
+                                            </div>
+                                            <div class="feedback-body">
+                                                <div class="feedback-meta">
+                                                    <strong><?php echo htmlspecialchars($fb['student_email']); ?></strong>
+                                                    <span class="feedback-dot">&bull;</span>
+                                                    <span><?php echo htmlspecialchars($fb['created_at'] ?? ''); ?></span>
+                                                    <span class="feedback-dot">&bull;</span>
+                                                    <span><?php echo str_repeat('★', (int)$fb['rating']); ?></span>
+                                                </div>
+                                                <?php if (!empty($fb['comments'])): ?>
+                                                    <p><?php echo nl2br(htmlspecialchars($fb['comments'])); ?></p>
+                                                <?php else: ?>
+                                                    <p class="panel-subtitle">No comment left.</p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
 
                     <aside class="event-side">
