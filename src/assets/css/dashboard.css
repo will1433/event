@@ -57,6 +57,121 @@
   font-size: 14px;
 }
 
+.chart-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.chart-box {
+  position: relative;
+  height: 260px;
+  padding: 10px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.chart-side-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chart-side-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mini-hint {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.chart-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.chip-blue {
+  background: #eef2ff;
+  color: #4338ca;
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.chip-green {
+  background: #ecfdf3;
+  color: #166534;
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.mini-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.mini-title a {
+  font-weight: 700;
+  text-decoration: none;
+  color: #1f2937;
+}
+
+.mini-title a:hover {
+  color: #2563eb;
+}
+
+.mini-meta {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
 /* ===== Notice board ===== */
 .notice-list {
   display: flex;
@@ -218,6 +333,12 @@
 @media (max-width: 960px) {
   .stats-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .chart-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -417,7 +538,6 @@
 .day-events a:hover {
   text-decoration: underline;
 }
-
 
 
 

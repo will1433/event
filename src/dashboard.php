@@ -67,6 +67,12 @@ $totalEvents        = 0;
 $upcomingEvents     = 0;
 $totalRegistrations = 0;
 $totalWaitlisted    = 0;
+$monthlyEvents        = array_fill(1, 12, 0);
+$monthlyRegistrations = array_fill(1, 12, 0);
+$chartMonths          = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+$chartTotals          = ['events' => 0, 'registrations' => 0];
+$topRegisteredEvents  = [];
+$chartData            = [];
 
 // Student stats (personal)
 $myEvents       = 0;
@@ -104,6 +110,64 @@ if ($isAdmin) {
 
     $card4Label = 'Waitlisted';
     $card4Value = $totalWaitlisted;
+
+    // Monthly trend for chart: current year events + registrations
+    $sql = "
+        SELECT MONTH(event_date) AS m, COUNT(*) AS c
+        FROM events
+        WHERE YEAR(event_date) = YEAR(CURDATE())
+        GROUP BY MONTH(event_date)
+    ";
+    if ($res = $conn->query($sql)) {
+        while ($row = $res->fetch_assoc()) {
+            $m = (int)$row['m'];
+            $monthlyEvents[$m] = (int)$row['c'];
+        }
+    }
+
+    $sql = "
+        SELECT MONTH(registered_at) AS m, COUNT(*) AS c
+        FROM registrations
+        WHERE YEAR(registered_at) = YEAR(CURDATE())
+        GROUP BY MONTH(registered_at)
+    ";
+    if ($res = $conn->query($sql)) {
+        while ($row = $res->fetch_assoc()) {
+            $m = (int)$row['m'];
+            $monthlyRegistrations[$m] = (int)$row['c'];
+        }
+    }
+
+    $chartTotals = [
+        'events' => array_sum($monthlyEvents),
+        'registrations' => array_sum($monthlyRegistrations),
+    ];
+
+    // Top events ranked by registrations
+    $sql = "
+        SELECT e.id, e.title, e.event_date, COUNT(r.id) AS reg_count
+        FROM events e
+        LEFT JOIN registrations r ON e.id = r.event_id
+        GROUP BY e.id, e.title, e.event_date
+        ORDER BY reg_count DESC, e.event_date DESC
+        LIMIT 5
+    ";
+    if ($res = $conn->query($sql)) {
+        while ($row = $res->fetch_assoc()) {
+            $topRegisteredEvents[] = [
+                'id'        => (int)$row['id'],
+                'title'     => $row['title'],
+                'event_date'=> $row['event_date'],
+                'reg_count' => (int)$row['reg_count'],
+            ];
+        }
+    }
+
+    $chartData = [
+        'labels'         => $chartMonths,
+        'events'         => array_values($monthlyEvents),
+        'registrations'  => array_values($monthlyRegistrations),
+    ];
 
 } else {
     // ========= STUDENT VIEW (STATS) =========
@@ -302,14 +366,47 @@ if (!$isAdmin && $userEmail) {
 
                 <!-- ADMIN CENTER CONTENT -->
 
-                <!-- Chart placeholder -->
+                <!-- Chart + data highlights -->
                 <section class="panel">
                     <div class="panel-header">
-                        <h2>Events Overview 2025</h2>
-                        <span class="panel-subtitle">Events per month (demo data)</span>
+                        <div>
+                            <h2>Events Overview</h2>
+                            <span class="panel-subtitle">Current year: events vs registrations</span>
+                        </div>
+                        <div class="chart-chips">
+                            <span class="chip chip-blue">Events YTD: <?php echo $chartTotals['events']; ?></span>
+                            <span class="chip chip-green">Registrations YTD: <?php echo $chartTotals['registrations']; ?></span>
+                        </div>
                     </div>
-                    <div class="chart-placeholder">
-                        Chart goes here
+                    <div class="chart-grid">
+                        <div class="chart-box">
+                            <canvas id="eventsChart" height="240"></canvas>
+                        </div>
+                        <div class="chart-side">
+                            <div class="chart-side-header">
+                                <h3>Top Registered Events</h3>
+                                <span class="mini-hint">Based on total joins</span>
+                            </div>
+                            <ul class="mini-list">
+                                <?php if (count($topRegisteredEvents) === 0): ?>
+                                    <li class="mini-list-item">No registrations yet.</li>
+                                <?php else: ?>
+                                    <?php foreach ($topRegisteredEvents as $ev): ?>
+                                        <li class="mini-list-item">
+                                            <div class="mini-title">
+                                                <a href="event_details.php?id=<?php echo $ev['id']; ?>">
+                                                    <?php echo htmlspecialchars($ev['title']); ?>
+                                                </a>
+                                                <span class="mini-meta">
+                                                    <?php echo date('d M', strtotime($ev['event_date'])); ?>
+                                                </span>
+                                            </div>
+                                            <span class="badge badge-green"><?php echo $ev['reg_count']; ?> joined</span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </div>
                 </section>
 
@@ -572,5 +669,92 @@ if (!$isAdmin && $userEmail) {
         </aside>
     </div>
 </div>
+
+<?php if ($isAdmin): ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var payload = <?php echo json_encode($chartData); ?>;
+    var canvas = document.getElementById('eventsChart');
+    if (!canvas || !payload) return;
+
+    var ctx = canvas.getContext('2d');
+
+    var regGradient = ctx.createLinearGradient(0, 0, 0, 260);
+    regGradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+    regGradient.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+
+    var eventGradient = ctx.createLinearGradient(0, 0, 0, 260);
+    eventGradient.addColorStop(0, 'rgba(79, 70, 229, 0.18)');
+    eventGradient.addColorStop(1, 'rgba(79, 70, 229, 0.05)');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: payload.labels,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Events',
+                    data: payload.events,
+                    backgroundColor: eventGradient,
+                    borderColor: '#4f46e5',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    maxBarThickness: 32
+                },
+                {
+                    type: 'line',
+                    label: 'Registrations',
+                    data: payload.registrations,
+                    borderColor: '#10b981',
+                    backgroundColor: regGradient,
+                    tension: 0.35,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#ffffff',
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: {
+                    display: true,
+                    align: 'start',
+                    labels: {
+                        boxWidth: 12,
+                        boxHeight: 12,
+                        font: { size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleColor: '#fff',
+                    bodyColor: '#e5e7eb',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(148, 163, 184, 0.25)', drawBorder: false },
+                    ticks: { stepSize: 2, font: { size: 11 } }
+                }
+            }
+        }
+    });
+});
+</script>
+<?php endif; ?>
 
 <?php include 'partials/footer.php'; ?>
